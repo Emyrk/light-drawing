@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 
+BRUSH_SIZE = 10
+
 # Colors on the resulting debug image contour borders
 colors = [
     (255, 0, 0),
@@ -33,3 +35,22 @@ def mask_colored(img, mask):
     bk = cv2.bitwise_or(background, background, mask=mask)
     final = cv2.bitwise_or(fg, bk)
     return final
+
+# Does not make a copy
+def draw_point(img, point):
+    cv2.circle(img, point, BRUSH_SIZE, (0, 255, 0), -1)
+
+def draw_points(img, points):
+    for p in points:
+        draw_point(img, p)
+
+def draw_line(img, p1, p2):
+    cv2.line(img, p1, p2, (0, 255, 0), thickness=3, lineType=8)
+
+def draw_lines(img, points):
+    if len(points) == 0:
+        return
+    for i in range(1, len(points)):
+        if points[i -1] is None or points[i] is None:
+            continue
+        draw_line(img, points[i-1], points[i])
