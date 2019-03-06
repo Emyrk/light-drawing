@@ -10,3 +10,4 @@ python3 find_brush.py -c
 python3 find_brush.py -i IMAGE_SRC
 ```
 
+Press 'spacebar' or 'c' to clear the drawing
