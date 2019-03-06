@@ -15,3 +15,5 @@ Press 'spacebar' or 'c' to clear the drawing
 # Helpful links
 
 http://www.justin-liang.com/tutorials/hsv_color_extraction/
+
+https://www.lifewire.com/what-is-hsv-in-design-1078068

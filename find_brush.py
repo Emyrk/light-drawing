@@ -6,7 +6,7 @@ import pdb
 
 import util
 
-COLOR_ORDER = ['blue', 'green', 'yellow']
+COLOR_ORDER = ['green', 'yellow'] # 'blue' <- Not really working
 
 PRIMARY_COLORS = {
     "blue":(255, 0, 0),
@@ -15,9 +15,9 @@ PRIMARY_COLORS = {
 }
 
 COLOR_HSV = {
-    "green": ((75, 30, 230), (105, 80, 255)),
-    "blue": ((0, 0, 0), (0, 0, 0)),
-    "yellow": ((20, 30, 230), (40, 50, 255))
+    "green": ((75, 30, 230), (100, 80, 255)),
+    "blue": ((120, 30, 230), (150, 80, 255)),
+    "yellow": ((20, 30, 150), (40, 50, 255))
 }
 
 
@@ -39,7 +39,8 @@ def main():
     args = parser.parse_args()
 
     cv2.namedWindow("painted", cv2.WINDOW_NORMAL)
-    cv2.namedWindow("debug", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("debug-1", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("debug-2", cv2.WINDOW_NORMAL)
     # cv2.resizeWindow("painted", (900, 900))
     # cv2.resizeWindow("debug", (900, 900))
 
@@ -68,6 +69,8 @@ def handle_webcam():
         if FLIP_IMAGES:
             frame = cv2.flip(frame, 1)
 
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
         frame_points = handle_frame(frame)
         for i in range(0, len(frame_points)):
             if frame_points[i] is not None:
@@ -80,6 +83,7 @@ def handle_webcam():
 
         # Display the resulting frame
         cv2.imshow('painted',frame)
+        # cv2.imshow('debug', gray)
         key = cv2.waitKey(1)
         if key & 0xFF == ord('q') or key & 0xFF == 27:
             break
@@ -97,9 +101,9 @@ def handle_single_img(imgsrc):
     img = cv2.imread(imgsrc)
     return handle_frame(img)
 
-def find_wand(img_hsv, brush_color):
-    green_wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
-    contours, hierarchy = cv2.findContours(green_wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+def find_wand_hsv_filter(img_hsv, brush_color):
+    wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
+    contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     biggest_contour = None
     for cnt in contours:
@@ -117,6 +121,20 @@ def find_wand(img_hsv, brush_color):
         return (cX, cY)
     return None
 
+# Using grayscale to find the brightest points.
+def find_wand_grayscale(img, brush_color):
+    g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    ret, threshold = cv2.threshold(g, 245, 255, cv2.THRESH_BINARY)
+
+    contours, hierarchy = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    circs = filter_circle_contours(contours)
+    circs_img = util.draw_contours(img, circs)
+    cv2.imshow('debug-1', circs_img)
+    cv2.imshow('debug-2', threshold)
+
+
+
 def handle_frame(img):
     # Blur (remove noise)
     blurred = cv2.GaussianBlur(img, (25, 25), 0) 
@@ -125,8 +143,9 @@ def handle_frame(img):
 
     # Find wand top (if exists)
     points = []
-    for i in range(0, 3):
-        points.append(find_wand(hsv, COLOR_ORDER[i]))
+    for i in range(0, len(COLOR_ORDER)):
+        points.append(find_wand_hsv_filter(hsv, COLOR_ORDER[i]))
+    # find_wand_grayscale(img, 'green')
     return points
 
 def filter_circle_contours(contours):
