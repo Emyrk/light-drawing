@@ -44,13 +44,13 @@ def draw_points(img, points):
     for p in points:
         draw_point(img, p)
 
-def draw_line(img, p1, p2):
-    cv2.line(img, p1, p2, (0, 255, 0), thickness=3, lineType=8)
+def draw_line(img, p1, p2, color):
+    cv2.line(img, p1, p2, color, thickness=3, lineType=8)
 
-def draw_lines(img, points):
+def draw_lines(img, points, color):
     if len(points) == 0:
         return
     for i in range(1, len(points)):
         if points[i -1] is None or points[i] is None:
             continue
-        draw_line(img, points[i-1], points[i])
+        draw_line(img, points[i-1], points[i], color)
