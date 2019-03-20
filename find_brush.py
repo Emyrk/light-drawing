@@ -6,6 +6,8 @@ import pdb
 
 import util
 
+IS_CV3 = cv2.getVersionMajor() == 3
+
 COLOR_ORDER = ['green', 'yellow'] # 'blue' <- Not really working
 
 PRIMARY_COLORS = {
@@ -103,7 +105,12 @@ def handle_single_img(imgsrc):
 
 def find_wand_hsv_filter(img_hsv, brush_color):
     wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
-    contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # the return signature is different in opencv 2 and opencv 3
+    if IS_CV3:
+        _, contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     biggest_contour = None
     for cnt in contours:
