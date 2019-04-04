@@ -6,6 +6,8 @@ import pdb
 
 import util
 
+IS_CV3 = cv2.getVersionMajor() == 3
+
 COLOR_ORDER = ['green', 'yellow'] # 'blue' <- Not really working
 
 PRIMARY_COLORS = {
@@ -102,9 +104,24 @@ def handle_single_img(imgsrc):
     return handle_frame(img)
 
 def find_wand_hsv_filter(img_hsv, brush_color):
-    wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
-    contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    """
+    Given an hsv image and a brush color (ie: green, yellow), this method
+    will find the wand head of that brush color within the image, and return the
+    location of the center of the wand head
 
+    :param img_hsv: hsv image
+    :param brush_color: color of brush
+    :return: location of center of brush head: (x,y) or None if not found
+    """
+    wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
+
+    # the return signature is different in opencv 2 and opencv 3
+    if IS_CV3:
+        _, contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # get the biggest contour (this should be our wand head)
     biggest_contour = None
     for cnt in contours:
         if biggest_contour is None:
@@ -112,6 +129,7 @@ def find_wand_hsv_filter(img_hsv, brush_color):
         elif cv2.contourArea(cnt) > cv2.contourArea(biggest_contour):
             biggest_contour = cnt
 
+    # given a contour, find the center
     if biggest_contour is not None:
         M = cv2.moments(biggest_contour)
         if M["m00"] == 0:
