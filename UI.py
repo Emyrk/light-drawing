@@ -16,7 +16,8 @@ def playing_round(frame, round, round_time, target, p1_coords, p2_coords):
 
 
 # Draw the end of round screen
-def post_round(frame, countdown, p1_score, p2_score):
+# accuracy will be between 0 and 1
+def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy):
     return frame
 
 
