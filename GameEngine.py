@@ -120,18 +120,22 @@ class GameEngine:
                     # TODO: This is where we will call Josh's EvaluationEngine
                     # self.p1.round_score = EvaluationEngine.eval(self.p1.world_coords, self.target)
                     self.p1.round_score = 10
+                    self.p1.round_accuracy = 0.7
                     print("P1 Score: {}".format(self.p1.round_score))
                 if self.p2.round_score is None:
                     # TODO: This is where we will call Josh's EvaluationEngine
                     # self.p2.round_score = EvaluationEngine.eval(self.p2.world_coords, self.target)
                     self.p2.round_score = 8
+                    self.p2.round_accuracy = 0.5
                     print("P2 Score: {}".format(self.p2.round_score))
 
                 if post_round_time > 0:
-                    frame = UI.post_round(frame, post_round_time, self.p1.round_score, self.p2.round_score)
+                    frame = UI.post_round(frame, post_round_time, self.p1.round_score, self.p2.round_score,
+                                          self.p1.round_accuracy, self.p2.round_accuracy)
                 else:
                     # Save the current round's score to each player's total score
-                    frame = UI.post_round(frame, 0, self.p1.round_score, self.p2.round_score)
+                    frame = UI.post_round(frame, 0, self.p1.round_score, self.p2.round_score,
+                                          self.p1.round_accuracy, self.p2.round_accuracy)
 
                     # Saves round score
                     self.p1.save_round()

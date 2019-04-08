@@ -9,6 +9,7 @@ class Player:
         self.is_drawing = False
         self.draw_time = 0
         self.round_score = None
+        self.round_accuracy = None
         self.total_score = 0
 
     # Add world/pixel coordinates to their respective arrays
@@ -45,6 +46,7 @@ class Player:
         if self.round_score:
             self.total_score += self.round_score
         self.round_score = None
+        self.round_accuracy = None
 
     def game_reset(self):
         self.__init__()
