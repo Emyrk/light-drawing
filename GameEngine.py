@@ -4,6 +4,7 @@ import Config
 import States
 import UI
 import Utility
+from RoundGenerator import RoundGenerator
 from Player import Player
 
 
@@ -38,12 +39,9 @@ class GameEngine:
             if self.state == States.PRE_ROUND:
                 # If this is the first loop where the state is PRE_ROUND, create a new target
                 if self.state_changed():
-                    # TODO: This is where we will generate the target in world coordinate
-                    # self.target = TargetGen(self.round)
+                    self.target = RoundGenerator.get_round(self.round)
 
-                    # Remove this once Josh implements the TargetGen
                     print("PRE_ROUND (Press Space to Continue)")
-                    self.target = None
 
                 frame = UI.pre_round(frame, self.round)
 
