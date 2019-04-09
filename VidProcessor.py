@@ -153,10 +153,29 @@ def find_wand_hsv_filter(img_hsv, brush_color, debug_image=False):
         circs_img = util.draw_contours(debug_image, contours)
         cv2.imshow('debug-1', circs_img)
 
+    return get_points_from_contours(contours)
+
+# Using grayscale to find the brightest points.
+#   Looks for a bright circle
+def find_wand_grayscale(img, brush_color):
+    g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    ret, threshold = cv2.threshold(g, 245, 255, cv2.THRESH_BINARY)
+
+    contours, hierarchy = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    circs = filter_circle_contours(contours)
+    circs_img = util.draw_contours(img, circs)
+    cv2.imshow('debug-1', circs_img)
+    cv2.imshow('debug-2', threshold)
+
+    return get_points_from_contours(circs)
+
+def get_points_from_contours(contours):
     # get the biggest contour (this should be our wand head)
     biggest_contour = None
     for cnt in contours:
-        if cv2.contourArea(cnt) < 100:
+        # Based on area?
+        if cv2.contourArea(cnt) < 1:
             continue
         if biggest_contour is None:
             biggest_contour = cnt
@@ -173,20 +192,6 @@ def find_wand_hsv_filter(img_hsv, brush_color, debug_image=False):
         return (cX, cY)
     return None
 
-# Using grayscale to find the brightest points.
-#   Looks for a bright circle
-def find_wand_grayscale(img, brush_color):
-    g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    ret, threshold = cv2.threshold(g, 245, 255, cv2.THRESH_BINARY)
-
-    contours, hierarchy = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    circs = filter_circle_contours(contours)
-    circs_img = util.draw_contours(img, circs)
-    cv2.imshow('debug-1', circs_img)
-    cv2.imshow('debug-2', threshold)
-
-
 
 def handle_frame(img, debug=False):
     # Blur (remove noise)
@@ -198,6 +203,7 @@ def handle_frame(img, debug=False):
     points = []
     for i in range(0, len(COLOR_ORDER)):
         points.append(find_wand_hsv_filter(hsv, COLOR_ORDER[i], debug and img))
+        # points.append(find_wand_grayscale(blurred, COLOR_ORDER[i]))
     # find_wand_grayscale(img, 'green')
     return points
 
