@@ -8,28 +8,50 @@ import util
 
 IS_CV3 = cv2.getVersionMajor() == 3
 
-COLOR_ORDER = ['green', 'yellow'] # 'blue' <- Not really working
+# The color order defines the player order as well.
+# 'green' is the first player, yellow is the second
+COLOR_ORDER = [
+    #'green', 
+    'yellow'
+    # 'blue' <- Not really working
+] 
 
 PRIMARY_COLORS = {
-    "blue":(255, 0, 0),
+    # "blue":(255, 0, 0),
     "green":(0, 255, 0),
     "yellow":(0, 255, 255)
 }
 
 COLOR_HSV = {
-    "green": ((75, 30, 230), (100, 80, 255)),
+    "green": ((75, 30, 230), (100, 80, 255)), # TODO: Fix tolerences
     "blue": ((120, 30, 230), (150, 80, 255)),
-    "yellow": ((20, 30, 150), (40, 50, 255))
+    # From: https://stackoverflow.com/questions/9179189/detect-yellow-color-in-opencv
+    "yellow": ((20, 100, 100), (30, 255, 255)) # TODO: Fix tolerences
 }
 
-
-PRIMARY_COLOR_BLUE = (255, 0, 0)
-PRIMARY_COLOR_YELLOW = (0, 0, 0)
-
-PRIMARY_COLOR_GREEN = (0, 255, 0)
-
+# This is whether or not to mirror the image to match "right-left"
+#   orientation in video. This is only used in debugging
 FLIP_IMAGES = True
 
+# p1_world_coord, p2_world_coord, p1_pixel_coord, p1_pixel_coord = VidProcessor.get_coords(frame)
+
+# Primary function of VidProcessor
+#   Params:
+#       frame           Full image frame, including both wands, one, or none
+#   Returns:
+#       p1_world_coord  Returns the world coordinate
+#       p2_world_coord
+#       p1_pixel_coord  Returns coordinate for GREEN wand, if present
+#       p2_pixel_coord  Returns coordinate for YELLOW wand, if present
+def get_coords(frame):
+    pixel_points = handle_frame(frame)
+    return None, None, pixel_points[0], pixel_points[1]
+
+# Get the player color for a given player number
+def get_player_color(player_num):
+    return COLOR_ORDER[player_num]
+
+# This is for debugging
 def main():
     # Argparse for filename if not default
     parser = argparse.ArgumentParser(description='Analyzing dice rolls')
@@ -59,7 +81,7 @@ def main():
         print("Using video camera")
         handle_webcam()
 
-
+# Used for debugging to use the webcam
 def handle_webcam():
     cap = cv2.VideoCapture(0)
     # 3 Wand types
@@ -73,7 +95,7 @@ def handle_webcam():
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        frame_points = handle_frame(frame)
+        frame_points = handle_frame(frame, True)
         for i in range(0, len(frame_points)):
             if frame_points[i] is not None:
                 if time.time() - last_point[i] > 0.5:
@@ -103,7 +125,7 @@ def handle_single_img(imgsrc):
     img = cv2.imread(imgsrc)
     return handle_frame(img)
 
-def find_wand_hsv_filter(img_hsv, brush_color):
+def find_wand_hsv_filter(img_hsv, brush_color, debug_image=False):
     """
     Given an hsv image and a brush color (ie: green, yellow), this method
     will find the wand head of that brush color within the image, and return the
@@ -113,7 +135,12 @@ def find_wand_hsv_filter(img_hsv, brush_color):
     :param brush_color: color of brush
     :return: location of center of brush head: (x,y) or None if not found
     """
+
+    # Manual tolerances
     wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
+
+    if not isinstance(debug_image, bool):
+        cv2.imshow('debug-2', wand)
 
     # the return signature is different in opencv 2 and opencv 3
     if IS_CV3:
@@ -121,9 +148,16 @@ def find_wand_hsv_filter(img_hsv, brush_color):
     else:
         contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+
+    if not isinstance(debug_image, bool):
+        circs_img = util.draw_contours(debug_image, contours)
+        cv2.imshow('debug-1', circs_img)
+
     # get the biggest contour (this should be our wand head)
     biggest_contour = None
     for cnt in contours:
+        if cv2.contourArea(cnt) < 100:
+            continue
         if biggest_contour is None:
             biggest_contour = cnt
         elif cv2.contourArea(cnt) > cv2.contourArea(biggest_contour):
@@ -140,6 +174,7 @@ def find_wand_hsv_filter(img_hsv, brush_color):
     return None
 
 # Using grayscale to find the brightest points.
+#   Looks for a bright circle
 def find_wand_grayscale(img, brush_color):
     g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -153,7 +188,7 @@ def find_wand_grayscale(img, brush_color):
 
 
 
-def handle_frame(img):
+def handle_frame(img, debug=False):
     # Blur (remove noise)
     blurred = cv2.GaussianBlur(img, (25, 25), 0) 
     # HSV to find color
@@ -162,7 +197,7 @@ def handle_frame(img):
     # Find wand top (if exists)
     points = []
     for i in range(0, len(COLOR_ORDER)):
-        points.append(find_wand_hsv_filter(hsv, COLOR_ORDER[i]))
+        points.append(find_wand_hsv_filter(hsv, COLOR_ORDER[i], debug and img))
     # find_wand_grayscale(img, 'green')
     return points
 
