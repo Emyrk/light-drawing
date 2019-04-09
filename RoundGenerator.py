@@ -31,7 +31,10 @@ class RoundGenerator:
         :return: pre-processed image in world size
         """
         # read in image
-        img = cv2.imread("round_images/" + img_name)
+        img = cv2.imread("round_images/" + img_name, cv2.IMREAD_GRAYSCALE)
+
+        # convert to binary image
+        img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)[1]
 
         # scale image to world coordinates
         img = cv2.resize(img, Config.WORLD_SPACE_SIZE)
@@ -40,16 +43,8 @@ class RoundGenerator:
         kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
         img = cv2.filter2D(img, -1, kernel)
 
+        # invert image so border is 255, and background is 0
+        img = (255 - img)
+
         # return image
         return img
-
-    @staticmethod
-    def display_image(img):
-        """
-        Just used for debugging
-        :param img:
-        :return:
-        """
-        cv2.namedWindow("win", cv2.WINDOW_NORMAL)
-        cv2.imshow("win", img)
-        cv2.waitKey(0)
