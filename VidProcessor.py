@@ -11,7 +11,7 @@ IS_CV3 = cv2.getVersionMajor() == 3
 # The color order defines the player order as well.
 # 'green' is the first player, yellow is the second
 COLOR_ORDER = [
-    #'green', 
+    'green', 
     'yellow'
     # 'blue' <- Not really working
 ] 
