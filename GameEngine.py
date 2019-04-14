@@ -99,10 +99,10 @@ class GameEngine:
                 if round_time > 0:
                     # We pass pixel coordinates because it will be quicker than to converting from world coordinates
                     frame = UI.playing_round(frame, ps, self.round, round_time, self.target,
-                                             self.p1.world_coords, self.p2.world_coords)
+                                             self.target, self.target)
                 else:
                     frame = UI.playing_round(frame, ps, self.round, 0, self.target,
-                                             self.p1.world_coords, self.p2.world_coords)
+                                             self.target, self.target)
 
                     self.p1.round_over()
                     self.p2.round_over()
