@@ -137,29 +137,34 @@ class GameEngine:
                 # Get the playable space such that each sub component knows the player's draw space
                 ps = Utility.playable_space(frame)
 
-                p1_drawing = DrawingEngine.draw_binary(self.p1.world_coords, ps.get("side"), ps.get("side"))
-                p2_drawing = DrawingEngine.draw_binary(self.p2.world_coords, ps.get("side"), ps.get("side"))
+                p1_drawing_binary = DrawingEngine.draw_binary(self.p1.world_coords, ps.get("side"), ps.get("side"))
+                p2_drawing_binary = DrawingEngine.draw_binary(self.p2.world_coords, ps.get("side"), ps.get("side"))
+
+                p1_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
+                                Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_ONE]])
+                p2_drawing = DrawingEngine.draw(self.p2.world_coords, ps.get("side"), ps.get("side"),
+                                                Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_TWO]])
 
                 if self.p1.round_score is None:
                     # TODO: convert p1 world coordinates to world size image before passing to evaluate
-                    evaluation = self.evaluation_engine.evaluate(self.target, p1_drawing, self.round_max_time, 0)
+                    evaluation = self.evaluation_engine.evaluate(self.target, p1_drawing_binary, self.round_max_time, 0)
                     self.p1.round_score = evaluation[1]
                     self.p1.round_accuracy = evaluation[0]
                     print("P1 Score: {}".format(self.p1.round_score))
                 if self.p2.round_score is None:
                     # TODO: convert p2 world coordinates to world size image before passing to evaluate
-                    evaluation = self.evaluation_engine.evaluate(self.target, p2_drawing, self.round_max_time, 0)
+                    evaluation = self.evaluation_engine.evaluate(self.target, p2_drawing_binary, self.round_max_time, 0)
                     self.p2.round_score = evaluation[1]
                     self.p2.round_accuracy = evaluation[0]
                     print("P2 Score: {}".format(self.p2.round_score))
 
                 if post_round_time > 0:
                     frame = UI.post_round(frame, post_round_time, self.p1.round_score, self.p2.round_score,
-                                          self.p1.round_accuracy, self.p2.round_accuracy)
+                                          self.p1.round_accuracy, self.p2.round_accuracy, ps, self.target, p1_drawing, p2_drawing)
                 else:
                     # Save the current round's score to each player's total score
                     frame = UI.post_round(frame, 0, self.p1.round_score, self.p2.round_score,
-                                          self.p1.round_accuracy, self.p2.round_accuracy)
+                                          self.p1.round_accuracy, self.p2.round_accuracy, ps, self.target, p1_drawing, p2_drawing)
 
                     # Saves round score
                     self.p1.save_round()

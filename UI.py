@@ -174,7 +174,7 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
     return frame
 
 
-def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy):
+def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy, ps, target, p1_img, p2_img):
     """
     Draws the end of round screen.
     :param frame: OpenCV image
@@ -183,8 +183,23 @@ def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy):
     :param p2_score: Score for player 2
     :param p1_accuracy: Percent accuracy (between 0 and 1) for player 1
     :param p2_accuracy: Percent accuracy (between 0 and 1) for player 2
+    :param ps: Playerspace details indicating the drawable area
+    :param target: Target image overlay
+    :param p1_coords: Player 1 coordinates in pixel space
+    :param p2_coords: Player 2 coordinates in pixel space
     :return: Mutated image
     """
+
+    rz = cv2.resize(target,(ps["side"],ps["side"]))
+    rz = cv2.cvtColor(rz, cv2.COLOR_GRAY2BGR)
+
+    p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
+    p2space = Utility.crop_playspace(frame, ps, Config.PLAYER_TWO)
+
+    cv2.add(cv2.divide(rz, 2), p1space, p1space)
+    cv2.add(cv2.divide(rz, 2), p2space, p2space)
+    cv2.add(p1space, p1_img, p1space)
+    cv2.add(p2space, p2_img, p2space)
 
     # Player frame
     _draw_frame(frame, labels=False)
@@ -224,8 +239,8 @@ def end_game(frame, p1_score, p2_score):
             return "*"
         return ""
 
-    _draw_text(frame, f"{winner('p1')}Player 1: {p1_score}", 0.5, 0.4)
-    _draw_text(frame, f"{winner('p2')}Player 2: {p2_score}", 0.5, 0.5)
+    _draw_text(frame, f"{winner('p1')}Player 1: {int(p1_score)}", 0.5, 0.4)
+    _draw_text(frame, f"{winner('p2')}Player 2: {int(p2_score)}", 0.5, 0.5)
 
     # "Press SPACE to play again"
     _draw_cta(frame, "play again")
