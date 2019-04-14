@@ -243,7 +243,7 @@ def end_game(frame, p1_score, p2_score):
     _draw_text(frame, f"{winner('p2')}Player 2: {int(p2_score)}", 0.5, 0.5)
 
     # "Press SPACE to play again"
-    _draw_cta(frame, "play again")
+    _draw_cta(frame, "play again", key="R")
 
     return frame
 
