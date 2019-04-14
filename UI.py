@@ -164,11 +164,11 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
 
 
     p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
-    cv2.imshow("Test", rz)
+    p2space = Utility.crop_playspace(frame, ps, Config.PLAYER_TWO)
 
-    # alpha = 0.5
-    # cv2.addWeighted(rz, alpha, p1space, 1 - alpha, 0.2, p1space)
-    cv2.add(rz, p1space, p1space)
+
+    cv2.add(cv2.divide(rz, 2), p1space, p1space)
+    cv2.add(cv2.divide(rz, 2), p2space, p2space)
 
     return frame
 
