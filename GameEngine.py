@@ -147,13 +147,13 @@ class GameEngine:
 
                 if self.p1.round_score is None:
                     # TODO: convert p1 world coordinates to world size image before passing to evaluate
-                    evaluation = self.evaluation_engine.evaluate(self.target, p1_drawing_binary, self.round_max_time, 0)
+                    evaluation = self.evaluation_engine.evaluate(self.target, p1_drawing_binary, self.round_max_time, self.p1.draw_time)
                     self.p1.round_score = evaluation[1]
                     self.p1.round_accuracy = evaluation[0]
                     print("P1 Score: {}".format(self.p1.round_score))
                 if self.p2.round_score is None:
                     # TODO: convert p2 world coordinates to world size image before passing to evaluate
-                    evaluation = self.evaluation_engine.evaluate(self.target, p2_drawing_binary, self.round_max_time, 0)
+                    evaluation = self.evaluation_engine.evaluate(self.target, p2_drawing_binary, self.round_max_time, self.p2.draw_time)
                     self.p2.round_score = evaluation[1]
                     self.p2.round_accuracy = evaluation[0]
                     print("P2 Score: {}".format(self.p2.round_score))
