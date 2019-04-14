@@ -65,6 +65,7 @@ def main():
     cv2.namedWindow("painted", cv2.WINDOW_NORMAL)
     cv2.namedWindow("debug-1", cv2.WINDOW_NORMAL)
     cv2.namedWindow("debug-2", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("playspace", cv2.WINDOW_NORMAL)
     # cv2.resizeWindow("painted", (900, 900))
     # cv2.resizeWindow("debug", (900, 900))
 
@@ -84,6 +85,9 @@ def main():
 # Used for debugging to use the webcam
 def handle_webcam():
     cap = cv2.VideoCapture(0)
+    # uvcdynctrl -f
+    cap.set(3,800) # Width
+    cap.set(4,600) # Height
     # 3 Wand types
     points = [[], [], []]
     last_point = [time.time(), time.time(), time.time()]
@@ -92,6 +96,14 @@ def handle_webcam():
         ret, frame = cap.read()
         if FLIP_IMAGES:
             frame = cv2.flip(frame, 1)
+
+        # Crop frame space to more a square
+        # crop_img = img[y:y+h, x:x+w]
+        # frame = frame[:480, :]
+
+        ps = util.playable_space(frame)
+        dps = util.draw_playspace(frame.copy(),ps)
+        cv2.imshow('playspace',dps)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -118,6 +130,7 @@ def handle_webcam():
     # When everything done, release the capture
     cap.release()
     cv2.destroyAllWindows()
+
 
 # https://solarianprogrammer.com/2015/05/08/detect-red-circles-image-using-opencv/
 # https://imagecolorpicker.com/
