@@ -99,6 +99,7 @@ def handle_webcam(cam):
             # Draw the lines
             util.draw_lines(frame, points[i], util.PRIMARY_COLORS[util.COLOR_ORDER[i]])
 
+        util.draw_playspace(frame, ps)
         # Display the resulting frame
         cv2.imshow('painted',frame)
         # cv2.imshow('debug', gray)
