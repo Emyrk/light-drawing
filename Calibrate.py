@@ -62,7 +62,7 @@ class Calibration:
     
         cnt = frame
         for i in range(len(final)):
-            cnt = util.draw_contours(cnt, final[i], util.PRIMARY_DEBUG_COLORS[self.players[i].color], 1)
+            cnt = util.draw_contours(cnt, final[i], (255, 255, 255), 1)
         cv2.imshow("calibration", cnt)
 
     def calibrate(self, event, x, y, flags, param):
