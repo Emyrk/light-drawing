@@ -35,6 +35,11 @@ class GameEngine:
         cv2.namedWindow(Config.WINDOW_NAME, cv2.WINDOW_NORMAL)
 
         cap = cv2.VideoCapture(self.camera)
+        # uvcdynctrl -f
+        res = [(800, 600), (1280, 720)]
+        chosen = res[0]
+        cap.set(3,chosen[0]) # Width
+        cap.set(4,chosen[1]) # Height
         while True:
             ret, frame = cap.read()
             if Config.FLIP_IMAGE:
