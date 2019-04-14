@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 numpy = "*"
 opencv-python = "==4.0.0.21"
+halo = "*"
+colorama = "*"
 
 [requires]
 python_version = "3.7"
