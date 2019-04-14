@@ -10,7 +10,8 @@ from Player import Player
 import VidProcessor
 
 class GameEngine:
-    def __init__(self):
+    def __init__(self, camera):
+        self.camera = camera
         self.state = States.IDLE
         self.prev_state = States.IDLE
 
@@ -33,7 +34,7 @@ class GameEngine:
         # Grabs the window name from the config
         cv2.namedWindow(Config.WINDOW_NAME, cv2.WINDOW_NORMAL)
 
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(self.camera)
         while True:
             ret, frame = cap.read()
             if Config.FLIP_IMAGE:

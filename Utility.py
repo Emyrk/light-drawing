@@ -1,3 +1,5 @@
+import os
+import sys
 import time
 import numpy as np
 import cv2
@@ -15,7 +17,7 @@ COLOR_ORDER = [
     'yellow',
     # 'green' 
     'blue' # <- Not really working
-] 
+]
 
 PRIMARY_COLORS = {
     "blue":(255, 0, 0),
@@ -56,7 +58,7 @@ def playable_space(frame):
     width = int(frame.shape[1])
     height = int(frame.shape[0])
     side = int(width/2) - PLAYSPACE_BUFFER
-    
+
     # vertical & horizontal offset
     vOffset = (height-side)/2
     hOffset = (width-side*2)/4
@@ -143,3 +145,38 @@ def draw_lines(img, points, color):
         if points[i -1] is None or points[i] is None:
             continue
         draw_line(img, points[i-1], points[i], color)
+
+
+class HideOutput:
+    """
+    A context manager for doing a "deep suppression" of stdout and stderr in
+    Python, i.e. will suppress all print, even if the print originates in a
+    compiled C/Fortran sub-function.
+
+    This will not suppress raised exceptions, since exceptions are printed
+    to stderr just before a script exits, and after the context manager has
+    exited.
+
+    Source: https://stackoverflow.com/q/11130156
+    """
+
+    def __init__(self):
+        # Open a pair of null files
+        self.null_fds = [os.open(os.devnull, os.O_RDWR) for _ in range(2)]
+
+        # Save the actual stdout (1) and stderr (2) file descriptors.
+        self.save_fds = [os.dup(1), os.dup(2)]
+
+    def __enter__(self):
+        # Assign the null pointers to stdout and stderr.
+        os.dup2(self.null_fds[0], 1)
+        os.dup2(self.null_fds[1], 2)
+
+    def __exit__(self, *_):
+        # Re-assign the real stdout/stderr back to (1) and (2)
+        os.dup2(self.save_fds[0], 1)
+        os.dup2(self.save_fds[1], 2)
+
+        # Close all file descriptors
+        for fd in self.null_fds + self.save_fds:
+            os.close(fd)
