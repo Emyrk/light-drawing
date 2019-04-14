@@ -21,7 +21,6 @@ FLIP_IMAGES = True
 def get_coords(frame, playspace, player_num):
     cropped = util.crop_playspace(frame, playspace, player_num)
     hsv = gaus_and_hsv(cropped)
-    cv2.imshow("%d" % player_num, cropped)
 
     return find_wand_hsv_filter(cropped, util.COLOR_ORDER[player_num])
 
