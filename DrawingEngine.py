@@ -11,6 +11,12 @@ class DrawingEngine:
         return img
 
     @staticmethod
+    def draw_binary(points, img_wid, img_hei):
+        img = DrawingEngine._blank_1_ch_img_of_size(img_wid, img_hei)
+        DrawingEngine._draw_lines(img, points, 255)
+        return img
+
+    @staticmethod
     def _draw_line(img, p1, p2, color):
         cv2.line(img, p1, p2, color, thickness=20, lineType=8)
 
@@ -26,6 +32,10 @@ class DrawingEngine:
     @staticmethod
     def _blank_img_of_size(img_wid, img_hei):
         return np.zeros((img_hei, img_wid, 3), np.uint8)
+
+    @staticmethod
+    def _blank_1_ch_img_of_size(img_wid, img_hei):
+        return np.zeros((img_hei, img_wid), np.uint8)
 
 
 # Use this
