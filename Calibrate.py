@@ -113,6 +113,8 @@ def main():
                         help="Turn on debugging")
     parser.add_argument("-c", action='store_true',
                         help="use camera instead of image")
+    parser.add_argument('-v', metavar='VIDEO_CAME', type=int,
+                        help='Choose video camera', default=0)
     args = parser.parse_args()
 
     # cv2.namedWindow("painted", cv2.WINDOW_NORMAL)
@@ -133,12 +135,12 @@ def main():
         cv2.waitKey(0)
     else:
         print("Using video camera")
-        handle_webcam()
+        handle_webcam(args.v)
 
 # Used for debugging to use the webcam
-def handle_webcam():
+def handle_webcam(cam):
     cali = Calibration()
-    cap = cv2.VideoCapture(2)
+    cap = cv2.VideoCapture(cam)
     # uvcdynctrl -f
     # cap.set(3,800) # Width
     # cap.set(4,600) # Height
