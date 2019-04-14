@@ -61,6 +61,10 @@ def _draw_text(img, text, x_pos, y_pos, size=1, color=(255, 255, 255), stroke=2)
     text_x = int((img.shape[1] - text_size[0]) * x_pos)
     text_y = int((img.shape[0] + text_size[1]) * y_pos)
 
+    # Draw poor man's drop shadow
+    cv2.putText(img, text, (text_x, text_y), NORMAL_FONT, size, (0, 0, 0), stroke + 5)
+
+    # Draw text
     cv2.putText(img, text, (text_x, text_y), NORMAL_FONT, size, color, stroke)
 
     return img
@@ -155,11 +159,11 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
     _draw_text(frame, f"Round {round}", 0.99, 0.05)
 
     # Timer
-    _draw_text(frame, "%.1f" % round_time, 0.99, 0.95)    
+    _draw_text(frame, "%.1f" % round_time, 0.99, 0.95)
 
-    # TODO: Image overlay/player coordinates
-    rz = cv2.resize(target,(ps["side"],ps["side"]))
-    rz = cv2.cvtColor(rz,cv2.COLOR_GRAY2BGR)
+    # Image overlay/player coordinates
+    rz = cv2.resize(target, (ps["side"], ps["side"]))
+    rz = cv2.cvtColor(rz, cv2.COLOR_GRAY2BGR)
 
     p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
     p2space = Utility.crop_playspace(frame, ps, Config.PLAYER_TWO)
@@ -190,7 +194,7 @@ def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy, p
     :return: Mutated image
     """
 
-    rz = cv2.resize(target,(ps["side"],ps["side"]))
+    rz = cv2.resize(target, (ps["side"], ps["side"]))
     rz = cv2.cvtColor(rz, cv2.COLOR_GRAY2BGR)
 
     p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
