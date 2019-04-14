@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from DebugUtils import display_all_img
 
 EVALUATION_SIZE_1 = (64, 64)
 EVALUATION_SIZE_2 = (16, 16)
@@ -49,11 +50,13 @@ class EvaluationEngine:
         target_sum = np.sum(target_p) / 255
 
         # compute the accuracy
+        correct_sum = target_sum - missing_sum
         total_wrong_pixels = (missing_sum + extra_sum)/2
         total_wrong_pixels = min((total_wrong_pixels * self.harshness), target_sum)
-        accuracy = 1.0 - (total_wrong_pixels/(target_sum))
+        accuracy = (correct_sum/target_sum)
+        accuracy = accuracy * (total_wrong_pixels/(target_sum))
 
-        score = (SCORE_MAX * accuracy * (1.0 - (draw_time/max_time)))
+        score = (SCORE_MAX * accuracy) + (SCORE_MAX * (1.0 - (draw_time/max_time)))
 
         return (accuracy, score)
 
@@ -73,3 +76,5 @@ class EvaluationEngine:
         pimg = cv2.threshold(pimg, 30, 255, cv2.THRESH_BINARY)[1]
 
         return pimg
+
+
