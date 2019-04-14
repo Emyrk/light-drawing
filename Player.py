@@ -22,8 +22,8 @@ class Player:
             self.draw_time = Utility.get_elapsed_time(round_start_time)
         elif world_coord is not None:
             # If the player was not drawing before, clear their drawing coordinates
-            if not self.is_drawing:
-                self.clear_coords()
+            #if not self.is_drawing:
+                #self.clear_coords()
             self.is_drawing = True
 
             # Add the new point to the player's coordinates

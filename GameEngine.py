@@ -134,15 +134,21 @@ class GameEngine:
                 # Get the countdown to the next round/end of game
                 post_round_time = Config.POST_ROUND_DURATION - Utility.get_elapsed_time(self.post_round_start_time)
 
+                # Get the playable space such that each sub component knows the player's draw space
+                ps = Utility.playable_space(frame)
+
+                p1_drawing = DrawingEngine.draw_binary(self.p1.world_coords, ps.get("side"), ps.get("side"))
+                p2_drawing = DrawingEngine.draw_binary(self.p2.world_coords, ps.get("side"), ps.get("side"))
+
                 if self.p1.round_score is None:
                     # TODO: convert p1 world coordinates to world size image before passing to evaluate
-                    evaluation = self.evaluation_engine.evaluate(self.target, self.target, self.round_max_time, 0)
+                    evaluation = self.evaluation_engine.evaluate(self.target, p1_drawing, self.round_max_time, 0)
                     self.p1.round_score = evaluation[1]
                     self.p1.round_accuracy = evaluation[0]
                     print("P1 Score: {}".format(self.p1.round_score))
                 if self.p2.round_score is None:
                     # TODO: convert p2 world coordinates to world size image before passing to evaluate
-                    evaluation = self.evaluation_engine.evaluate(self.target, self.target, self.round_max_time, 0)
+                    evaluation = self.evaluation_engine.evaluate(self.target, p2_drawing, self.round_max_time, 0)
                     self.p2.round_score = evaluation[1]
                     self.p2.round_accuracy = evaluation[0]
                     print("P2 Score: {}".format(self.p2.round_score))
