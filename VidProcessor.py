@@ -4,7 +4,7 @@ import argparse
 import time
 import pdb
 
-import util
+import Utility as util
 
 IS_CV3 = cv2.getVersionMajor() == 3
 
