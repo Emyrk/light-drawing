@@ -83,9 +83,9 @@ def handle_webcam(cam):
         # crop_img = img[y:y+h, x:x+w]
         # frame = frame[:480, :]
 
-        # ps = util.playable_space(frame)
-        # dps = util.draw_playspace(frame.copy(),ps)
-        # cv2.imshow('playspace',dps)
+        ps = util.playable_space(frame)
+        dps = util.draw_playspace(frame.copy(),ps)
+        cv2.imshow('playspace',dps)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -198,9 +198,9 @@ def get_points_from_contours(contours):
 
 def gaus_and_hsv(img):
     # Blur (remove noise)
-    blurred = cv2.GaussianBlur(img, (25, 25), 0) 
+    # blurred = cv2.GaussianBlur(img, (25, 25), 0) 
     # HSV to find color
-    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     return hsv
 
 def handle_frame(img, debug=False):

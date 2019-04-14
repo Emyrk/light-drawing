@@ -30,9 +30,9 @@ PRIMARY_DEBUG_COLORS = {
 
 COLOR_HSV = {
     "green": [(75, 30, 230), (100, 80, 255)], # TODO: Fix tolerences
-    "blue": [(70, 224, 225), (130, 284, 285)],
+    "blue": [(80, 233, 233), (120, 273, 273)],
     # From: https://stackoverflow.com/questions/9179189/detect-yellow-color-in-opencv
-    "yellow": [(0, 102, 223), (61, 164, 285)]
+    "yellow": [(10, 90, 235), (50, 130, 275)]
  # TODO: Fix tolerences
 }
 
