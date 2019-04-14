@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import Utility
+import Config
 
 NORMAL_FONT = cv2.FONT_HERSHEY_DUPLEX
 
@@ -157,7 +158,16 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
     _draw_text(frame, "%.1f" % round_time, 0.99, 0.95)    
 
     # TODO: Image overlay/player coordinates
+    rz = cv2.resize(target,(ps["side"],ps["side"]))
+    rz = cv2.cvtColor(rz,cv2.COLOR_GRAY2BGR)
+    print(rz.shape, target.shape, frame.shape, ps["side"])
 
+
+    p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
+    cv2.imshow("Test", rz)
+
+    alpha = 0.5
+    cv2.addWeighted(rz, alpha, p1space, 1 - alpha, 0, p1space)
 
 
     return frame
