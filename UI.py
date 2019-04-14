@@ -134,7 +134,7 @@ def countdown(frame, countdown):
     return frame
 
 
-def playing_round(frame, ps, round, round_time, target, p1_coords, p2_coords):
+def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
     """
     Draws the playing screen.
     :param frame: OpenCV image
