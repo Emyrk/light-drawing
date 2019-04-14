@@ -40,8 +40,8 @@ class GameEngine:
         # uvcdynctrl -f
         res = [(800, 600), (1280, 720)]
         chosen = res[0]
-        cap.set(3,chosen[0]) # Width
-        cap.set(4,chosen[1]) # Height
+        cap.set(3, chosen[0])  # Width
+        cap.set(4, chosen[1])  # Height
         while True:
             ret, frame = cap.read()
             if Config.FLIP_IMAGE:
@@ -62,7 +62,7 @@ class GameEngine:
                 # Wait for a player to press the space bar
                 # TODO: For some reason this is not immediately responsive. Anyone can feel free to solve this problem.
                 key = cv2.waitKey(1)
-                if key & 0xFF == ord(' ') or key & 0xFF == 32:
+                if key == ord(' ') or key == 32:
                     self.state = States.COUNTDOWN
 
             elif self.state == States.COUNTDOWN:
@@ -188,8 +188,8 @@ class GameEngine:
                 frame = UI.end_game(frame, self.p1.total_score, self.p2.total_score)
 
                 key = cv2.waitKey(1)
-                if key & 0xFF == ord('r') or key & 0xFF == 82:
-                    self.__init__()
+                if key == ord('r') or key == 82:
+                    self.__init__(self.camera)
                     self.run_engine()
 
             else:
@@ -198,7 +198,7 @@ class GameEngine:
 
             cv2.imshow(Config.WINDOW_NAME, frame)
             key = cv2.waitKey(1)
-            if key & 0xFF == ord('q') or key & 0xFF == 27:
+            if key == ord('q') or key == 27:
                 break
 
     def state_changed(self):
@@ -206,6 +206,3 @@ class GameEngine:
             self.prev_state = self.state
             return True
         return False
-
-    def update(self):
-        pass
