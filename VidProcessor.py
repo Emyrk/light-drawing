@@ -22,7 +22,7 @@ def get_coords(frame, playspace, player_num):
     cropped = util.crop_playspace(frame, playspace, player_num)
     hsv = gaus_and_hsv(cropped)
 
-    return find_wand_hsv_filter(cropped, util.COLOR_ORDER[player_num])
+    return find_wand_hsv_filter(hsv, util.COLOR_ORDER[player_num])
 
 # Get the player color for a given player number
 def get_player_color(player_num):

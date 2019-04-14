@@ -21,6 +21,7 @@ class Player:
             # If the player was not drawing before, clear their drawing coordinates
             if not self.is_drawing:
                 self.clear_coords()
+            self.is_drawing = True
 
             # Add the new point to the player's coordinates
             self.world_coords.append(world_coord)

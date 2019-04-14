@@ -5,8 +5,10 @@ import States
 import UI
 import Utility
 from RoundGenerator import RoundGenerator
+from DrawingEngine import DrawingEngine
 from EvaluationEngine import EvaluationEngine
 from Player import Player
+from DebugUtils import display_all_img
 import VidProcessor
 
 class GameEngine:
@@ -101,13 +103,23 @@ class GameEngine:
                 # Get the current round's time
                 round_time = Config.ROUND_DURATION - Utility.get_elapsed_time(self.round_start_time)
 
+                p1_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
+                                                Utility.PRIMARY_COLORS["yellow"])
+                p2_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
+                                                Utility.PRIMARY_COLORS["green"])
+
+                print("p1 points: {}".format(len(self.p1.world_coords)))
+
+                if (len(self.p1.world_coords) > 10):
+                    display_all_img([p1_drawing, p2_drawing])
+
                 if round_time > 0:
                     # We pass pixel coordinates because it will be quicker than to converting from world coordinates
                     frame = UI.playing_round(frame, ps, self.round, round_time, self.target,
-                                             self.target, self.target)
+                                             p1_drawing, p2_drawing)
                 else:
                     frame = UI.playing_round(frame, ps, self.round, 0, self.target,
-                                             self.target, self.target)
+                                             p1_drawing, p2_drawing)
 
                     self.p1.round_over()
                     self.p2.round_over()
