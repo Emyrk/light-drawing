@@ -105,7 +105,7 @@ class GameEngine:
 
                 p1_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
                                                 Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_ONE]])
-                p2_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
+                p2_drawing = DrawingEngine.draw(self.p2.world_coords, ps.get("side"), ps.get("side"),
                                                 Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_TWO]])
 
                 print("p1 points: {}".format(len(self.p1.world_coords)))
