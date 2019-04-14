@@ -129,7 +129,7 @@ def countdown(frame, countdown):
     _draw_frame(frame)
 
     # Countdown
-    _draw_text(frame, f"{countdown}", 0.5, 0.5, size=10, stroke=12)
+    _draw_text(frame, "%.1f" % countdown, 0.5, 0.5, size=10, stroke=12)
 
     return frame
 
@@ -154,7 +154,7 @@ def playing_round(frame, ps, round, round_time, target, p1_coords, p2_coords):
     _draw_text(frame, f"Round {round}", 0.99, 0.05)
 
     # Timer
-    _draw_text(frame, f"{round_time}", 0.99, 0.95)    
+    _draw_text(frame, "%.1f" % round_time, 0.99, 0.95)    
 
     # TODO: Image overlay/player coordinates
 
@@ -179,7 +179,7 @@ def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy):
     _draw_frame(frame, labels=False)
 
     # Timer
-    _draw_text(frame, f"{countdown}", 0.99, 0.95)
+    _draw_text(frame, "%.1f" % countdown, 0.99, 0.95)
 
     # Player 1 stats
     _draw_text(frame, "Player 1", 0.15, 0.4, size=2)
