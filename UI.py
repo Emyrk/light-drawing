@@ -160,8 +160,6 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
     # TODO: Image overlay/player coordinates
     rz = cv2.resize(target,(ps["side"],ps["side"]))
     rz = cv2.cvtColor(rz,cv2.COLOR_GRAY2BGR)
-    print(rz.shape, target.shape, frame.shape, ps["side"])
-
 
     p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
     p2space = Utility.crop_playspace(frame, ps, Config.PLAYER_TWO)
