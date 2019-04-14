@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import Utility
 
 NORMAL_FONT = cv2.FONT_HERSHEY_DUPLEX
 
@@ -133,10 +134,11 @@ def countdown(frame, countdown):
     return frame
 
 
-def playing_round(frame, round, round_time, target, p1_coords, p2_coords):
+def playing_round(frame, ps, round, round_time, target, p1_coords, p2_coords):
     """
     Draws the playing screen.
     :param frame: OpenCV image
+    :param ps: Playerspace details indicating the drawable area
     :param round: Current round
     :param round_time: Time left in the round
     :param target: Target image overlay
@@ -152,9 +154,11 @@ def playing_round(frame, round, round_time, target, p1_coords, p2_coords):
     _draw_text(frame, f"Round {round}", 0.99, 0.05)
 
     # Timer
-    _draw_text(frame, f"{round_time}", 0.99, 0.95)
+    _draw_text(frame, f"{round_time}", 0.99, 0.95)    
 
     # TODO: Image overlay/player coordinates
+
+
 
     return frame
 
