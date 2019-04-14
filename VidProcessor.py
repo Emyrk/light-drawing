@@ -8,27 +8,6 @@ import Utility as util
 
 IS_CV3 = cv2.getVersionMajor() == 3
 
-# The color order defines the player order as well.
-# 'green' is the first player, yellow is the second
-COLOR_ORDER = [
-    'green', 
-    'yellow'
-    # 'blue' <- Not really working
-] 
-
-PRIMARY_COLORS = {
-    # "blue":(255, 0, 0),
-    "green":(0, 255, 0),
-    "yellow":(0, 255, 255)
-}
-
-COLOR_HSV = {
-    "green": ((75, 30, 230), (100, 80, 255)), # TODO: Fix tolerences
-    "blue": ((120, 30, 230), (150, 80, 255)),
-    # From: https://stackoverflow.com/questions/9179189/detect-yellow-color-in-opencv
-    "yellow": ((20, 100, 100), (30, 255, 255)) # TODO: Fix tolerences
-}
-
 # This is whether or not to mirror the image to match "right-left"
 #   orientation in video. This is only used in debugging
 FLIP_IMAGES = True
@@ -49,7 +28,7 @@ def get_coords(frame):
 
 # Get the player color for a given player number
 def get_player_color(player_num):
-    return COLOR_ORDER[player_num]
+    return util.COLOR_ORDER[player_num]
 
 # This is for debugging
 def main():
@@ -84,10 +63,10 @@ def main():
 
 # Used for debugging to use the webcam
 def handle_webcam():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(2)
     # uvcdynctrl -f
-    cap.set(3,800) # Width
-    cap.set(4,600) # Height
+    # cap.set(3,800) # Width
+    # cap.set(4,600) # Height
     # 3 Wand types
     points = [[], [], []]
     last_point = [time.time(), time.time(), time.time()]
@@ -97,17 +76,18 @@ def handle_webcam():
         if FLIP_IMAGES:
             frame = cv2.flip(frame, 1)
 
+
         # Crop frame space to more a square
         # crop_img = img[y:y+h, x:x+w]
         # frame = frame[:480, :]
 
-        ps = util.playable_space(frame)
-        dps = util.draw_playspace(frame.copy(),ps)
-        cv2.imshow('playspace',dps)
+        # ps = util.playable_space(frame)
+        # dps = util.draw_playspace(frame.copy(),ps)
+        # cv2.imshow('playspace',dps)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        frame_points = handle_frame(frame, True)
+        frame_points = handle_frame(frame, False)
         for i in range(0, len(frame_points)):
             if frame_points[i] is not None:
                 if time.time() - last_point[i] > 0.5:
@@ -115,7 +95,7 @@ def handle_webcam():
                 points[i].append(frame_points[i])
                 last_point[i] = time.time()
             # Draw the lines
-            util.draw_lines(frame, points[i], PRIMARY_COLORS[COLOR_ORDER[i]])
+            util.draw_lines(frame, points[i], util.PRIMARY_COLORS[util.COLOR_ORDER[i]])
 
         # Display the resulting frame
         cv2.imshow('painted',frame)
@@ -138,6 +118,24 @@ def handle_single_img(imgsrc):
     img = cv2.imread(imgsrc)
     return handle_frame(img)
 
+def find_pixel_range(img_hsv, brush_color):
+    return cv2.inRange(img_hsv, util.COLOR_HSV[brush_color][0], util.COLOR_HSV[brush_color][1])
+
+def find_contours_hsv_filter(img_hsv, brush_color, debug_image=False):
+    # Manual tolerances
+    wand = cv2.inRange(img_hsv, util.COLOR_HSV[brush_color][0], util.COLOR_HSV[brush_color][1])
+
+    if not isinstance(debug_image, bool):
+        cv2.imshow('debug-2', wand)
+
+    # the return signature is different in opencv 2 and opencv 3
+    if IS_CV3:
+        _, contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    return contours
+
 def find_wand_hsv_filter(img_hsv, brush_color, debug_image=False):
     """
     Given an hsv image and a brush color (ie: green, yellow), this method
@@ -150,17 +148,7 @@ def find_wand_hsv_filter(img_hsv, brush_color, debug_image=False):
     """
 
     # Manual tolerances
-    wand = cv2.inRange(img_hsv, COLOR_HSV[brush_color][0], COLOR_HSV[brush_color][1])
-
-    if not isinstance(debug_image, bool):
-        cv2.imshow('debug-2', wand)
-
-    # the return signature is different in opencv 2 and opencv 3
-    if IS_CV3:
-        _, contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    else:
-        contours, hierarchy = cv2.findContours(wand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    contours = find_contours_hsv_filter(img_hsv, brush_color, debug_image=False)
 
     if not isinstance(debug_image, bool):
         circs_img = util.draw_contours(debug_image, contours)
@@ -193,7 +181,7 @@ def get_points_from_contours(contours):
         if biggest_contour is None:
             biggest_contour = cnt
         elif cv2.contourArea(cnt) > cv2.contourArea(biggest_contour):
-            biggest_contour = cnt
+            bdfiggest_contour = cnt
 
     # given a contour, find the center
     if biggest_contour is not None:
@@ -206,17 +194,21 @@ def get_points_from_contours(contours):
     return None
 
 
-def handle_frame(img, debug=False):
+def gaus_and_hsv(img):
     # Blur (remove noise)
     blurred = cv2.GaussianBlur(img, (25, 25), 0) 
     # HSV to find color
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+    return hsv
+
+def handle_frame(img, debug=False):
+    hsv = gaus_and_hsv(img)
 
     # Find wand top (if exists)
     points = []
-    for i in range(0, len(COLOR_ORDER)):
-        points.append(find_wand_hsv_filter(hsv, COLOR_ORDER[i], debug and img))
-        # points.append(find_wand_grayscale(blurred, COLOR_ORDER[i]))
+    for i in range(0, len(util.COLOR_ORDER)):
+        points.append(find_wand_hsv_filter(hsv, util.COLOR_ORDER[i], debug and img))
+        # points.append(find_wand_grayscale(blurred, util.COLOR_ORDER[i]))
     # find_wand_grayscale(img, 'green')
     return points
 

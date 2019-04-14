@@ -8,6 +8,33 @@ BRUSH_SIZE = 10
 # Horizontal buffer for playspaces
 PLAYSPACE_BUFFER = 10
 
+# The color order defines the player order as well.
+# 'green' is the first player, yellow is the second
+COLOR_ORDER = [
+    'yellow',
+    # 'green' 
+    'blue' # <- Not really working
+] 
+
+PRIMARY_COLORS = {
+    "blue":(255, 0, 0),
+    "green":(0, 255, 0),
+    "yellow":(0, 255, 255)
+}
+
+PRIMARY_DEBUG_COLORS = {
+    "blue":(0,0,0),
+    "green":(0,0,0),
+    "yellow":(0,0,0)
+}
+
+COLOR_HSV = {
+    "green": [(75, 30, 230), (100, 80, 255)], # TODO: Fix tolerences
+    "blue": [(70, 224, 225), (130, 284, 285)],
+    # From: https://stackoverflow.com/questions/9179189/detect-yellow-color-in-opencv
+    "yellow": [(0, 102, 223), (61, 164, 285)]
+ # TODO: Fix tolerences
+}
 
 def get_elapsed_time(start_time, end_time=None):
     if start_time is None:
@@ -72,15 +99,15 @@ colors = [
 ]
 
 # Draws contours and fills in the area on an image.
-def draw_contours(img, contours):
+def draw_contours(img, contours, color=None, alpha=0.5):
     contoured = img.copy()
     ci = 0
     for cnt in contours:
-        alpha = 0.2
         overlay = contoured.copy()
-        cv2.fillPoly(overlay, pts=[cnt], color=colors[ci%len(colors)])
+        c = color or colors[ci%len(colors)]
+        cv2.fillPoly(overlay, pts=[cnt], color=c)
         cv2.addWeighted(overlay, alpha, contoured, 1.0-alpha, 0, contoured)
-        cv2.drawContours(contoured, cnt, -1, colors[ci%len(colors)], 8)
+        cv2.drawContours(contoured, cnt, -1, c, 8)
         ci += 1
     return contoured
 
