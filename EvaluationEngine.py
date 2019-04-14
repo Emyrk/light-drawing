@@ -3,6 +3,7 @@ import numpy as np
 
 EVALUATION_SIZE_1 = (64, 64)
 EVALUATION_SIZE_2 = (16, 16)
+SCORE_MAX = 50
 
 class EvaluationEngine:
     harshness = 1.0
@@ -20,7 +21,7 @@ class EvaluationEngine:
         """
         self.harshness = harshness
 
-    def evaluate(self, target, drawing):
+    def evaluate(self, target, drawing, max_time, draw_time):
         """
         This compares two images, and returns the similarity
         as a number between 0 and 1.
@@ -52,7 +53,9 @@ class EvaluationEngine:
         total_wrong_pixels = min((total_wrong_pixels * self.harshness), target_sum)
         accuracy = 1.0 - (total_wrong_pixels/(target_sum))
 
-        return accuracy
+        score = (SCORE_MAX * accuracy * (1.0 - (draw_time/max_time)))
+
+        return (accuracy, score)
 
 
     def _pre_process(self, img):
