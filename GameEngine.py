@@ -65,7 +65,7 @@ class GameEngine:
                     self.countdown_start_time = time.time()
 
                 # Get the pre round countdown time
-                countdown = Config.COUNTDOWN_DURATION - Utility.get_elapsed_time(self.countdown_start_time)
+                countdown = self.round_max_time - Utility.get_elapsed_time(self.countdown_start_time)
 
                 if countdown > 0:
                     frame = UI.countdown(frame, countdown)
