@@ -164,6 +164,7 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
     p1space = Utility.crop_playspace(frame, ps, Config.PLAYER_ONE)
     p2space = Utility.crop_playspace(frame, ps, Config.PLAYER_TWO)
 
+    Utility.draw_playspace(frame, ps)
 
     cv2.add(cv2.divide(rz, 2), p1space, p1space)
     cv2.add(cv2.divide(rz, 2), p2space, p2space)
