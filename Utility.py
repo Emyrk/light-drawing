@@ -26,10 +26,10 @@ PRIMARY_COLORS = {
 }
 
 COLOR_HSV = {
-    "green": [(48, 81, 242), (68, 101, 262)], # TODO: Fix tolerences
-    "blue": [(80, 233, 233), (120, 273, 273)],
+    "green": [(70, 28, 235), (110, 68, 275)],#[(48, 81, 242), (68, 101, 262)], # TODO: Fix tolerences
+    "blue": [(75, 153, 235), (115, 193, 275)],#[(80, 233, 233), (120, 273, 273)],
     # From: https://stackoverflow.com/questions/9179189/detect-yellow-color-in-opencv
-    "yellow": [(10, 90, 235), (50, 130, 275)]
+    "yellow": [(155, 0, 245), (175, 12, 265)]#[(10, 90, 235), (50, 130, 275)]
  # TODO: Fix tolerences
 }
 
