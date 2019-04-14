@@ -15,8 +15,8 @@ PLAYSPACE_BUFFER = 10
 # 'green' is the first player, yellow is the second
 COLOR_ORDER = [
     'yellow',
-    # 'green' 
-    'blue' # <- Not really working
+    'green' 
+    # 'blue' # <- Not really working
 ]
 
 PRIMARY_COLORS = {
@@ -26,7 +26,7 @@ PRIMARY_COLORS = {
 }
 
 COLOR_HSV = {
-    "green": [(75, 30, 230), (100, 80, 255)], # TODO: Fix tolerences
+    "green": [(48, 81, 242), (68, 101, 262)], # TODO: Fix tolerences
     "blue": [(80, 233, 233), (120, 273, 273)],
     # From: https://stackoverflow.com/questions/9179189/detect-yellow-color-in-opencv
     "yellow": [(10, 90, 235), (50, 130, 275)]
@@ -74,13 +74,13 @@ def draw_playspace(frame, playspace):
     overlay = frame.copy()
 
     cv2.rectangle(overlay, playspace["ltl"], playspace["lbr"],
-        (0, 0, 255), -1)
+        (255, 255, 255), -1)
     alpha = 0.1
     cv2.addWeighted(overlay, alpha, frame, 1 - alpha,
         0, frame)
 
     cv2.rectangle(overlay, playspace["rtl"], playspace["rbr"],
-        (255, 0, 0), -1)
+        (255, 255, 255), -1)
     cv2.addWeighted(overlay, alpha, frame, 1 - alpha,
         0, frame)
     return frame
