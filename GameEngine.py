@@ -5,6 +5,7 @@ import States
 import UI
 import Utility
 from RoundGenerator import RoundGenerator
+from EvaluationEngine import EvaluationEngine
 from Player import Player
 
 
@@ -15,6 +16,7 @@ class GameEngine:
 
         self.round = 1
         self.target = None
+        self.round_max_time = 0
 
         self.round_start_time = time.time()
         self.countdown_start_time = time.time()
@@ -22,6 +24,8 @@ class GameEngine:
 
         self.p1 = Player()
         self.p2 = Player()
+
+        self.evaluation_engine = EvaluationEngine(1.0)
 
     def run_engine(self):
         self.state = States.PRE_ROUND
@@ -39,7 +43,9 @@ class GameEngine:
             if self.state == States.PRE_ROUND:
                 # If this is the first loop where the state is PRE_ROUND, create a new target
                 if self.state_changed():
-                    self.target = RoundGenerator.get_round(self.round)
+                    round = RoundGenerator.get_round(self.round)
+                    self.target = round[0]
+                    self.round_max_time = round[1]
 
                     print("PRE_ROUND (Press Space to Continue)")
 
@@ -115,16 +121,16 @@ class GameEngine:
                 post_round_time = Config.POST_ROUND_DURATION - Utility.get_elapsed_time(self.post_round_start_time)
 
                 if self.p1.round_score is None:
-                    # TODO: This is where we will call Josh's EvaluationEngine
-                    # self.p1.round_score = EvaluationEngine.eval(self.p1.world_coords, self.target)
-                    self.p1.round_score = 10
-                    self.p1.round_accuracy = 0.7
+                    # TODO: convert p1 world coordinates to world size image before passing to evaluate
+                    evaluation = self.evaluation_engine.evaluate(self.target, self.target, self.round_max_time, 0)
+                    self.p1.round_score = evaluation[1]
+                    self.p1.round_accuracy = evaluation[0]
                     print("P1 Score: {}".format(self.p1.round_score))
                 if self.p2.round_score is None:
-                    # TODO: This is where we will call Josh's EvaluationEngine
-                    # self.p2.round_score = EvaluationEngine.eval(self.p2.world_coords, self.target)
-                    self.p2.round_score = 8
-                    self.p2.round_accuracy = 0.5
+                    # TODO: convert p2 world coordinates to world size image before passing to evaluate
+                    evaluation = self.evaluation_engine.evaluate(self.target, self.target, self.round_max_time, 0)
+                    self.p2.round_score = evaluation[1]
+                    self.p2.round_accuracy = evaluation[0]
                     print("P2 Score: {}".format(self.p2.round_score))
 
                 if post_round_time > 0:
