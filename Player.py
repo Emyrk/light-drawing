@@ -1,11 +1,13 @@
 import Config
 import Utility
+import time
 
 
 class Player:
     def __init__(self):
         self.world_coords = []
         self.is_drawing = False
+        self.last_draw_time = time.time()
         self.draw_time = 0
         self.round_score = None
         self.round_accuracy = None
@@ -13,7 +15,8 @@ class Player:
 
     # Add world coordinates to their respective arrays
     def update_coord(self, world_coord, round_start_time):
-        if world_coord is None and self.is_drawing:
+        time_since_last_draw = Utility.get_elapsed_time(self.last_draw_time)
+        if world_coord is None and self.is_drawing and time_since_last_draw >= Config.DRAW_TIMEOUT:
             # Take the amount of time it took the player to draw their image
             self.is_drawing = False
             self.draw_time = Utility.get_elapsed_time(round_start_time)
@@ -25,6 +28,7 @@ class Player:
 
             # Add the new point to the player's coordinates
             self.world_coords.append(world_coord)
+            self.last_draw_time = time.time()
 
     # clear the coordinates of the player's drawing
     def clear_coords(self):
