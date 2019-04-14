@@ -110,8 +110,6 @@ class GameEngine:
 
                 print("p1 points: {}".format(len(self.p1.world_coords)))
 
-                if (len(self.p1.world_coords) > 10):
-                    display_all_img([p1_drawing, p2_drawing])
 
                 if round_time > 0:
                     # We pass pixel coordinates because it will be quicker than to converting from world coordinates

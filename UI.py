@@ -167,6 +167,8 @@ def playing_round(frame, ps, round, round_time, target, p1_img, p2_img):
 
     cv2.add(cv2.divide(rz, 2), p1space, p1space)
     cv2.add(cv2.divide(rz, 2), p2space, p2space)
+    cv2.add(p1space, p1_img, p1space)
+    cv2.add(p2space, p2_img, p2space)
 
     return frame
 
