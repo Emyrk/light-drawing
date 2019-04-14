@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 
 NORMAL_FONT = cv2.FONT_HERSHEY_DUPLEX
-SMALL_FONT = cv2.FONT_HERSHEY_PLAIN
 
 
 def _draw_line(img, pt1, pt2, color=(255, 255, 255), stroke=1, gap=20):
@@ -65,19 +64,21 @@ def _draw_text(img, text, x_pos, y_pos, size=1, color=(255, 255, 255), stroke=2)
     return img
 
 
-def _draw_frame(img):
+def _draw_frame(img, labels=True):
     """
     Draw the "split-screen" 2-player frame.
     :param img: OpenCV image
     :return: Mutated image
     """
-    _draw_text(img, "Player 1", 0.2, 0.9)
-    _draw_text(img, "Player 2", 0.8, 0.9)
 
     line_start = (int(img.shape[1] / 2), 0)
     line_end = (int(img.shape[1] / 2), img.shape[0])
 
     _draw_line(img, line_start, line_end, color=(200, 200, 200), stroke=2)
+
+    if labels:
+        _draw_text(img, "Player 1", 0.2, 0.9)
+        _draw_text(img, "Player 2", 0.8, 0.9)
 
     return img
 
@@ -115,26 +116,105 @@ def pre_round(frame, round):
     return frame
 
 
-# Draw countdown screen
 def countdown(frame, countdown):
+    """
+    Draws the countdown screen.
+    :param frame: OpenCV image
+    :param countdown: Current countdown value
+    :return: Mutated image
+    """
+
+    # Player frame
+    _draw_frame(frame)
+
+    # Countdown
+    _draw_text(frame, f"{countdown}", 0.5, 0.5, size=10, stroke=12)
+
     return frame
 
 
-# Draw UI for when the round is running
-# Note: target is in world space
-# Note: p1 and p2 are coordinates in pixel space
 def playing_round(frame, round, round_time, target, p1_coords, p2_coords):
+    """
+    Draws the playing screen.
+    :param frame: OpenCV image
+    :param round: Current round
+    :param round_time: Time left in the round
+    :param target: Target image overlay
+    :param p1_coords: Player 1 coordinates in pixel space
+    :param p2_coords: Player 2 coordinates in pixel space
+    :return: Mutated image
+    """
+
+    # Player frame
+    _draw_frame(frame)
+
+    # Round info
+    _draw_text(frame, f"Round {round}", 0.99, 0.05)
+
+    # Timer
+    _draw_text(frame, f"{round_time}", 0.99, 0.95)
+
+    # TODO: Image overlay/player coordinates
+
     return frame
 
 
-# Draw the end of round screen
-# accuracy will be between 0 and 1
 def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy):
+    """
+    Draws the end of round screen.
+    :param frame: OpenCV image
+    :param countdown: Time left until next round
+    :param p1_score: Score for player 1
+    :param p2_score: Score for player 2
+    :param p1_accuracy: Percent accuracy (between 0 and 1) for player 1
+    :param p2_accuracy: Percent accuracy (between 0 and 1) for player 2
+    :return: Mutated image
+    """
+
+    # Player frame
+    _draw_frame(frame, labels=False)
+
+    # Timer
+    _draw_text(frame, f"{countdown}", 0.99, 0.95)
+
+    # Player 1 stats
+    _draw_text(frame, "Player 1", 0.15, 0.4, size=2)
+    _draw_text(frame, f"Score: {p1_score}", 0.14, 0.5)
+    _draw_text(frame, f"Accuracy: {p1_accuracy * 100}%", 0.15, 0.55)
+
+    # Player 2 stats
+    _draw_text(frame, "Player 2", 0.85, 0.4, size=2)
+    _draw_text(frame, f"Score: {p2_score}", 0.80, 0.5)
+    _draw_text(frame, f"Accuracy: {p2_accuracy * 100}%", 0.85, 0.55)
+
     return frame
 
 
-# Draw the end game screen that displays who the winner is
 def end_game(frame, p1_score, p2_score):
+    """
+    Draw the end game/scoreboard screen.
+    :param frame: OpenCV image
+    :param p1_score: Overall score for player 1
+    :param p2_score: Overall score for player 2
+    :return: Mutated image
+    """
+    # Header
+    _draw_text(frame, "Game Over", 0.5, 0.2, size=3, stroke=5)
+
+    # Scoreboard
+    def winner(player):
+        if player == 'p1' and p1_score > p2_score:
+            return "*"
+        elif player == 'p2' and p2_score > p1_score:
+            return "*"
+        return ""
+
+    _draw_text(frame, f"{winner('p1')}Player 1: {p1_score}", 0.5, 0.4)
+    _draw_text(frame, f"{winner('p2')}Player 2: {p2_score}", 0.5, 0.5)
+
+    # "Press SPACE to play again"
+    _draw_cta(frame, "play again")
+
     return frame
 
 
@@ -144,6 +224,10 @@ if __name__ == "__main__":
         img = np.zeros((600, 1000, 3), np.uint8)
 
         pre_round(img, 1)
+        # countdown(img, 5)
+        # playing_round(2, 32, None, None, None)
+        # post_round(img, 4, 14623, 12345, 0.84, 0.95)
+        # end_game(img, 14623, 12345)
 
         cv2.imshow('image', img)
         cv2.waitKey(0)
