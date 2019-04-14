@@ -189,6 +189,7 @@ class GameEngine:
 
                 key = cv2.waitKey(1)
                 if key == ord('r') or key == 82:
+                    cap.release()
                     self.__init__(self.camera)
                     self.run_engine()
 
