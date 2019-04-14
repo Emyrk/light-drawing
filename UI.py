@@ -194,13 +194,13 @@ def post_round(frame, countdown, p1_score, p2_score, p1_accuracy, p2_accuracy):
 
     # Player 1 stats
     _draw_text(frame, "Player 1", 0.15, 0.4, size=2)
-    _draw_text(frame, f"Score: {p1_score}", 0.14, 0.5)
-    _draw_text(frame, f"Accuracy: {p1_accuracy * 100}%", 0.15, 0.55)
+    _draw_text(frame, "Score: %.1f" % p1_score, 0.14, 0.5)
+    _draw_text(frame, "Accuracy: %d%%" % int(p2_accuracy * 100), 0.15, 0.55)
 
     # Player 2 stats
     _draw_text(frame, "Player 2", 0.85, 0.4, size=2)
-    _draw_text(frame, f"Score: {p2_score}", 0.80, 0.5)
-    _draw_text(frame, f"Accuracy: {p2_accuracy * 100}%", 0.85, 0.55)
+    _draw_text(frame, "Score: %.1f" % p2_score, 0.80, 0.5)
+    _draw_text(frame, "Accuracy: %d%%" % int(p2_accuracy * 100), 0.85, 0.55)
 
     return frame
 
