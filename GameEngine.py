@@ -7,7 +7,7 @@ import Utility
 from RoundGenerator import RoundGenerator
 from EvaluationEngine import EvaluationEngine
 from Player import Player
-
+import VidProcessor
 
 class GameEngine:
     def __init__(self):
@@ -81,18 +81,16 @@ class GameEngine:
                     print("PLAYING ROUND")
                     self.round_start_time = time.time()
 
-                # TODO: This is where I would call VidProcessor for the list of points
-                # p1_world_coord, p2_world_coord, p1_pixel_coord, p2_pixel_coord = VidProcessor.get_coords(frame)
+                # Get the playable space such that each sub component knows the player's draw space
+                ps = Utility.playable_space(frame)
 
-                # Remove these once Steve implements the VidProcessor
-                p1_world_coord = None
-                p2_world_coord = None
-                p1_pixel_coord = None
-                p2_pixel_coord = None
+                # TODO: This is where I would call VidProcessor for the list of points
+                p1_world_coord = VidProcessor.get_coords(frame, ps, Config.PLAYER_ONE) # Player 1
+                p2_world_coord = VidProcessor.get_coords(frame, ps, Config.PLAYER_TWO) # Player 2
 
                 # Add the new drawing coordinates to each player
-                self.p1.update_coord(p1_world_coord, p1_pixel_coord, self.round_start_time)
-                self.p2.update_coord(p2_world_coord, p2_pixel_coord, self.round_start_time)
+                self.p1.update_coord(p1_world_coord, self.round_start_time)
+                self.p2.update_coord(p2_world_coord, self.round_start_time)
 
                 # Get the current round's time
                 round_time = Config.ROUND_DURATION - Utility.get_elapsed_time(self.round_start_time)
@@ -100,10 +98,10 @@ class GameEngine:
                 if round_time > 0:
                     # We pass pixel coordinates because it will be quicker than to converting from world coordinates
                     frame = UI.playing_round(frame, self.round, round_time, self.target,
-                                             self.p1.pixel_coords, self.p2.pixel_coords)
+                                             self.p1.world_coords, self.p2.world_coords)
                 else:
                     frame = UI.playing_round(frame, self.round, 0, self.target,
-                                             self.p1.pixel_coords, self.p2.pixel_coords)
+                                             self.p1.world_coords, self.p2.world_coords)
 
                     self.p1.round_over()
                     self.p2.round_over()

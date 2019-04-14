@@ -12,19 +12,18 @@ IS_CV3 = cv2.getVersionMajor() == 3
 #   orientation in video. This is only used in debugging
 FLIP_IMAGES = True
 
-# p1_world_coord, p2_world_coord, p1_pixel_coord, p1_pixel_coord = VidProcessor.get_coords(frame)
-
 # Primary function of VidProcessor
 #   Params:
 #       frame           Full image frame, including both wands, one, or none
+#       color           Color to search for
 #   Returns:
-#       p1_world_coord  Returns the world coordinate
-#       p2_world_coord
-#       p1_pixel_coord  Returns coordinate for GREEN wand, if present
-#       p2_pixel_coord  Returns coordinate for YELLOW wand, if present
-def get_coords(frame):
-    pixel_points = handle_frame(frame)
-    return None, None, pixel_points[0], pixel_points[1]
+#       pixel_coord  Returns coordinate for COLOR wand, if present. None otherwise
+def get_coords(frame, playspace, player_num):
+    cropped = util.crop_playspace(frame, playspace, player_num)
+    hsv = gaus_and_hsv(cropped)
+    cv2.imshow("%d" % player_num, cropped)
+
+    return find_wand_hsv_filter(cropped, util.COLOR_ORDER[player_num])
 
 # Get the player color for a given player number
 def get_player_color(player_num):
@@ -78,7 +77,6 @@ def handle_webcam(cam):
         if FLIP_IMAGES:
             frame = cv2.flip(frame, 1)
 
-
         # Crop frame space to more a square
         # crop_img = img[y:y+h, x:x+w]
         # frame = frame[:480, :]
@@ -86,6 +84,9 @@ def handle_webcam(cam):
         ps = util.playable_space(frame)
         dps = util.draw_playspace(frame.copy(),ps)
         cv2.imshow('playspace',dps)
+
+        frame = util.crop_playspace(frame, ps, 1)
+
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 

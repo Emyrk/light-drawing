@@ -13,7 +13,7 @@ class Player:
         self.total_score = 0
 
     # Add world/pixel coordinates to their respective arrays
-    def update_coord(self, world_coord, pixel_coord, round_start_time):
+    def update_coord(self, world_coord, round_start_time):
         if world_coord is None and self.is_drawing:
             # Take the amount of time it took the player to draw their image
             self.is_drawing = False
@@ -25,7 +25,6 @@ class Player:
 
             # Add the new point to the player's coordinates
             self.world_coords.append(world_coord)
-            self.pixel_coords.append(pixel_coord)
 
     # clear the coordinates of the player's drawing
     def clear_coords(self):

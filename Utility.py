@@ -1,6 +1,7 @@
 import time
 import numpy as np
 import cv2
+from Config import *
 
 # Brush size for drawing
 BRUSH_SIZE = 10
@@ -20,12 +21,6 @@ PRIMARY_COLORS = {
     "blue":(255, 0, 0),
     "green":(0, 255, 0),
     "yellow":(0, 255, 255)
-}
-
-PRIMARY_DEBUG_COLORS = {
-    "blue":(0,0,0),
-    "green":(0,0,0),
-    "yellow":(0,0,0)
 }
 
 COLOR_HSV = {
@@ -68,7 +63,8 @@ def playable_space(frame):
     midx = int(width/2)
 
     return {"ltl":(int(hOffset), int(vOffset)), "lbr":(int(midx-hOffset), int(height-vOffset)),
-            "rtl":(int(midx+hOffset), int(vOffset)), "rbr":(int(width-hOffset), int(height-vOffset))}
+            "rtl":(int(midx+hOffset), int(vOffset)), "rbr":(int(width-hOffset), int(height-vOffset)),
+            "side":side}
 
 # draw_playspace will draw the playspace on the frame passed in.
 #   It does not draw on a copy
@@ -86,6 +82,15 @@ def draw_playspace(frame, playspace):
     cv2.addWeighted(overlay, alpha, frame, 1 - alpha,
         0, frame)
     return frame
+
+# crop_playspace will crop out the playspace from the flame to player 0 and player 1 space
+def crop_playspace(frame, playspace, player):
+    # Crop frame space to playerspace
+    # crop_img = img[y:y+h, x:x+w]
+    if player == PLAYER_ONE:
+        return frame[playspace["ltl"][1]:playspace["lbr"][1], playspace["ltl"][0]:playspace["lbr"][0]]
+    else:
+        return frame[playspace["rtl"][1]:playspace["rbr"][1], playspace["rtl"][0]:playspace["rbr"][0]]
 
 # Colors on the resulting debug image contour borders
 #   Contours will be drawn with different colors
