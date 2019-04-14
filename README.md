@@ -1,5 +1,15 @@
 # Light Drawing
 
+# Installation
+
+Install [Python 3.7](https://www.python.org/downloads) and [Pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv) for your platform. Then, run the following to install project dependencies and start a subshell in the virtual environment:
+
+```
+pipenv shell
+```
+
+For full Pipenv usage, see `pipenv -h`.
+
 # find_brush.py
 
 ```
