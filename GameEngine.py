@@ -28,7 +28,7 @@ class GameEngine:
         self.p1 = Player()
         self.p2 = Player()
 
-        self.evaluation_engine = EvaluationEngine(1.0)
+        self.evaluation_engine = EvaluationEngine(0.7)
 
     def run_engine(self):
         self.state = States.PRE_ROUND
@@ -101,7 +101,7 @@ class GameEngine:
                 self.p2.update_coord(p2_world_coord, self.round_start_time)
 
                 # Get the current round's time
-                round_time = Config.ROUND_DURATION - Utility.get_elapsed_time(self.round_start_time)
+                round_time = self.round_max_time - Utility.get_elapsed_time(self.round_start_time)
 
                 p1_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
                                                 Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_ONE]])
@@ -127,6 +127,8 @@ class GameEngine:
 
             elif self.state == States.POST_ROUND:
                 # If this is the first loop where the state is POST_ROUND, set the start_time to the current time
+                print("p1 draw time: {}".format(self.p1.draw_time))
+                print("p2 draw time: {}".format(self.p2.draw_time))
                 if self.state_changed():
                     print("POST ROUND")
                     self.post_round_start_time = time.time()
@@ -137,13 +139,15 @@ class GameEngine:
                 # Get the playable space such that each sub component knows the player's draw space
                 ps = Utility.playable_space(frame)
 
-                p1_drawing_binary = DrawingEngine.draw_binary(self.p1.world_coords, ps.get("side"), ps.get("side"))
-                p2_drawing_binary = DrawingEngine.draw_binary(self.p2.world_coords, ps.get("side"), ps.get("side"))
-
                 p1_drawing = DrawingEngine.draw(self.p1.world_coords, ps.get("side"), ps.get("side"),
                                 Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_ONE]])
                 p2_drawing = DrawingEngine.draw(self.p2.world_coords, ps.get("side"), ps.get("side"),
                                                 Utility.PRIMARY_COLORS[Utility.COLOR_ORDER[Config.PLAYER_TWO]])
+
+                p1_drawing_binary = cv2.cvtColor(p1_drawing, cv2.COLOR_BGR2GRAY)
+                p2_drawing_binary = cv2.cvtColor(p2_drawing, cv2.COLOR_BGR2GRAY)
+                p1_drawing_binary = cv2.threshold(p1_drawing_binary, 30, 255, cv2.THRESH_BINARY)[1]
+                p2_drawing_binary = cv2.threshold(p2_drawing_binary, 30, 255, cv2.THRESH_BINARY)[1]
 
                 if self.p1.round_score is None:
                     # TODO: convert p1 world coordinates to world size image before passing to evaluate
