@@ -1,6 +1,6 @@
 FLIP_IMAGE = True
 WINDOW_NAME = "Light Drawing"
-NUM_ROUNDS = 2  # Make 4 or 5 rounds
+NUM_ROUNDS = 6  # this is actually 5
 COUNTDOWN_DURATION = 3
 ROUND_DURATION = 5  # Make 10 seconds
 POST_ROUND_DURATION = 5  # Make 8 seconds

@@ -6,10 +6,11 @@ class RoundGenerator:
 
     # (target image, seconds to play)
     rounds = [
-        ("circle.png", 3),
-        ("square.png", 5),
-        ("rectangle.png", 5),
-        ("triangle.png", 5)
+        ("circle.png", 10),
+        ("square.png", 10),
+        ("rectangle.png", 10),
+        ("triangle.png", 10),
+        ("disney.png", 15),
     ]
 
     @staticmethod
