@@ -34,7 +34,7 @@ class DrawingEngine:
 
     @staticmethod
     def _smooth(points):
-        size = 5
+        size = 3
         if len(points) < size:
             return points
         unzipped = list(zip(*points))
