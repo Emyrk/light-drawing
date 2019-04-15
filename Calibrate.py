@@ -51,7 +51,7 @@ class Calibration:
         points = []
         final = [ [] for i in range(len(self.players))]
 
-        for i in range(0, len(util.COLOR_ORDER)):
+        for i in range(0, len(util.COLOR_ORDER)-1):
             c = util.COLOR_ORDER[i]
             pixel_map = find_pixel_range(hsv, c)
             cv2.imshow(c, pixel_map)
