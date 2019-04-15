@@ -4,7 +4,7 @@ from DebugUtils import display_all_img
 from RoundGenerator import RoundGenerator
 
 EVALUATION_SIZE_1 = (64, 64)
-EVALUATION_SIZE_2 = (16, 16)
+EVALUATION_SIZE_2 = (32, 32)
 SCORE_MAX = 100
 
 class EvaluationEngine:
