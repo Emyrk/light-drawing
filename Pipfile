@@ -6,10 +6,12 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+
 numpy = "*"
-opencv-python = "==4.0.0.21"
+"opencv-python" = "==4.0.0.21"
 halo = "*"
 colorama = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"
