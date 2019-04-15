@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 from DebugUtils import display_all_img
+from RoundGenerator import RoundGenerator
 
 EVALUATION_SIZE_1 = (64, 64)
 EVALUATION_SIZE_2 = (16, 16)
-SCORE_MAX = 50
+SCORE_MAX = 100
 
 class EvaluationEngine:
     harshness = 1.0
@@ -36,27 +37,33 @@ class EvaluationEngine:
         target_p = self._pre_process(target)
         drawing_p = self._pre_process(drawing)
 
-        # calculate the amount the drawing missed
-        # (didn't fill in the lines)
+        # calculate the total number of pixels in target image
+        target_sum = np.sum(target_p) / 255
+
+        # calculate the number of correctly drawn pixels
         missing = cv2.subtract(target_p, drawing_p)
         missing_sum = np.sum(missing)/255
+        correct_sum = target_sum - missing_sum
 
-        # calculate the amount the drawing added
+        # calculate the number of extra pixels drawn (not touching target)
         # (colored outside the lines)
         extra = cv2.subtract(drawing_p, target_p)
         extra_sum = np.sum(extra) / 255
 
-        # calculate the total number of pixels desired
-        target_sum = np.sum(target_p) / 255
+        # of pixels drawn, what ratio ([0,1]) were on target?
+        drawing_accuracy = correct_sum / max((correct_sum + extra_sum), 1)
 
-        # compute the accuracy
-        correct_sum = target_sum - missing_sum
-        total_wrong_pixels = (missing_sum + extra_sum)/2
-        total_wrong_pixels = min((total_wrong_pixels * self.harshness), target_sum)
-        accuracy = (correct_sum/target_sum)
-        accuracy = accuracy * (total_wrong_pixels/(target_sum))
+        # what percent ([0,1]) of the image was filled in?
+        image_completeness = correct_sum / max(target_sum, 1)
 
-        score = (SCORE_MAX * accuracy) + (SCORE_MAX * (1.0 - (draw_time/max_time)))
+        # final accuracy percent ([0,1])
+        accuracy = image_completeness * drawing_accuracy
+
+        accuracy = max(min(accuracy - ((self.harshness - 1) * accuracy), 1.0), 0.0)
+
+        # display_all_img([target, drawing, missing, extra])
+
+        score = (SCORE_MAX * accuracy)
 
         return (accuracy, score)
 
@@ -78,3 +85,5 @@ class EvaluationEngine:
         return pimg
 
 
+# e = EvaluationEngine(0.7)
+# e.evaluate(RoundGenerator.get_round(3)[0], RoundGenerator.get_round(4)[0], 5, 5)
